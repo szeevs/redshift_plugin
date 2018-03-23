@@ -266,10 +266,10 @@ class S3ToRedshiftOperator(BaseOperator):
         def getS3Conn():
             creds = ""
             s3_conn = get_conn(self.s3_conn_id)
-            aws_key = s3_conn.extra_dejson.get('aws_access_key_id')
-            aws_secret = s3_conn.extra_dejson.get('aws_secret_access_key')
+            aws_key = s3_conn.extra_dejson.get('aws_access_key_id', None)
+            aws_secret = s3_conn.extra_dejson.get('aws_secret_access_key', None)
             # support for cross account resource access
-            aws_role_arn = s3_conn.extra_dejson.get('role_arn')
+            aws_role_arn = s3_conn.extra_dejson.get('role_arn', None)
 
             if aws_key and aws_secret:
                 creds = ("aws_access_key_id={0};aws_secret_access_key={1}"
