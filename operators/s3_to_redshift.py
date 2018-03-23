@@ -376,7 +376,7 @@ class S3ToRedshiftOperator(BaseOperator):
         output = ''
         for item in schema:
             k = "{quote}{key}{quote}".format(quote='"', key=item)
-            field = ' '.join([k, schema[item])
+            field = ' '.join([k, schema[item]])
             if isinstance(self.sortkey, str) and self.sortkey == item:
                 field += ' sortkey'
             output += field
