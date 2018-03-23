@@ -233,22 +233,22 @@ class S3ToRedshiftOperator(BaseOperator):
             """.format(self.redshift_schema, self.table)
 
         pg_schema = dict(pg_hook.get_records(pg_query))
-        incoming_keys = [column['name'] for column in schema]
+        incoming_keys = [column for column in schema]
         diff = list(set(incoming_keys) - set(pg_schema.keys()))
         print(diff)
         # Check length of column differential to see if any new columns exist
         if len(diff):
             for i in diff:
                 for e in schema:
-                    if i == e['name']:
+                    if i == e:
                         alter_query = \
                          """
                          ALTER TABLE "{0}"."{1}"
                          ADD COLUMN "{2}" {3}
                          """.format(self.redshift_schema,
                                     self.table,
-                                    e['name'],
-                                    e['type'])
+                                    e,
+                                    schema[e])
                         pg_hook.run(alter_query)
                         logging.info('The new columns were:' + str(diff))
         else:
@@ -385,9 +385,9 @@ class S3ToRedshiftOperator(BaseOperator):
     def create_if_not_exists(self, schema, pg_hook, temp=False):
         output = ''
         for item in schema:
-            k = "{quote}{key}{quote}".format(quote='"', key=item['name'])
-            field = ' '.join([k, item['type']])
-            if isinstance(self.sortkey, str) and self.sortkey == item['name']:
+            k = "{quote}{key}{quote}".format(quote='"', key=item)
+            field = ' '.join([k, schema[item]])
+            if isinstance(self.sortkey, str) and self.sortkey == item:
                 field += ' sortkey'
             output += field
             output += ', '
